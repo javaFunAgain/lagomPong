@@ -14,7 +14,7 @@ object Welcome {
   case class WelcomeState(reg: RegisterState = RegisterState())
 
 
-  private val api = new ServerApi
+
 
   private val loginSection = ReactComponentB[Unit]("LoginSection")
     .initialState(new LoginState("", ""))
@@ -41,10 +41,10 @@ object Welcome {
 
     def login(e: ReactEventI) = {
       $.state.map(reg => {
-        api.loginUser(reg.login, reg.pass).onComplete(
+        Pong.getMainBackend.get.server.loginUser(reg.login, reg.pass).onComplete(
           result => result.foreach(value => {
             if (value.isDefined) {
-              println(s"logged ${value}")
+              Pong.getMainBackend.foreach(_.toGameList())
             } else {
               //  $.state(_)
               println("login error")
@@ -82,10 +82,12 @@ object Welcome {
 
 
       $.state.map(reg => {
-        api.registerUser(reg.login, reg.pass).onComplete(
+        Pong.getMainBackend.get.server.registerUser(reg.login, reg.pass).onComplete(
           result => result.foreach(value => {
             if (value.ok) {
-              Pong.getMainBackend.foreach(_.toGameList(Seq()))
+              Pong.getMainBackend.get.server.loginUser(reg.login, reg.pass).onComplete(
+                _=>Pong.getMainBackend.get.toGameList()
+              )
             } else {
               //  $.state(_)
               println("akis error")
