@@ -34,12 +34,14 @@ class ServerApi {
     result.future
   }
 
-  def loginUser(login: String, pass: String): Future[Session] = {
+  def loginUser(login: String, pass: String): Future[Option[Session]] = {
     val data = NewUser(pass)
-    val result = Promise[Session]
+    val result = Promise[Option[Session]]
     jQuery.post("/api/users/login/" + login, write[NewUser](data).asInstanceOf[js.Any], null, "text").done(
       (response: String) => {
-        result.success(read[Session](response))
+        result.success( Option(read[Session](response)))
+
+
       }
     )
     result.future

@@ -15,6 +15,8 @@
         <module>cassandra-config</module>
         <module>user-api</module>
         <module>user-impl</module>
+        <module>game-api</module>
+        <module>game-impl</module>
     </modules>
 
     <build>

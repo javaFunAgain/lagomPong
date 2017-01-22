@@ -24,6 +24,13 @@ public class SessionsEntity extends PersistentEntity<SessionsCommand, SessionsEv
                                evt-> ctx.reply(Option.some(ses)));
                 });
 
+        b.setReadOnlyCommandHandler( SessionsCommand.GetSession.class,
+                (cmd,ctx) ->
+                        ctx.reply( state().findSession(cmd.sessionId))
+        );
+
+
+
         return b.build();
     }
 

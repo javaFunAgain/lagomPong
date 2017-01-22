@@ -1,5 +1,6 @@
 package pl.setblack.pongi.users.impl;
 
+import akka.NotUsed;
 import akka.japi.Pair;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.ResponseHeader;
@@ -10,6 +11,7 @@ import javaslang.control.Option;
 import pl.setblack.pongi.sessions.impl.SessionsCommand;
 import pl.setblack.pongi.sessions.impl.SessionsEntity;
 import pl.setblack.pongi.users.*;
+import scala.Unit;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletableFuture;
@@ -57,4 +59,11 @@ public class UsersServiceImpl implements UsersService {
         }
     }
 
+    @Override
+    public ServiceCall<NotUsed, Option<Session>> session(String sessionId) {
+        return  request -> {
+            PersistentEntityRef<SessionsCommand> ref = persistentEntityRegistry.refFor(SessionsEntity.class, "global");
+            return ref.ask(new SessionsCommand.GetSession(sessionId));
+        };
+    }
 }

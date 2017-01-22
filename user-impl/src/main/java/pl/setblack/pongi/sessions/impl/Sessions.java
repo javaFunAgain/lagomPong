@@ -3,6 +3,7 @@ package pl.setblack.pongi.sessions.impl;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.HashMap;
+import javaslang.control.Option;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import pl.setblack.pongi.users.Session;
 
@@ -39,5 +40,9 @@ public class Sessions {
 
     Sessions withNewSession( final Session ses) {
         return new Sessions(this.clock, this.activeSessions.put(ses.uuid, ses));
+    }
+
+    Option<Session> findSession(final String sessionId) {
+        return this.activeSessions.get(UUID.fromString(sessionId));
     }
 }

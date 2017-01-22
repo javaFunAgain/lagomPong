@@ -1,0 +1,3 @@
+curl --data '{"password": "ucpa"}' http://localhost:9000/api/users/login/iiaa
+
+curl http://localhost:9000/api/users/session/""

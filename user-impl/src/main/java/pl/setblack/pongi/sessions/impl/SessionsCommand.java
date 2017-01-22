@@ -25,4 +25,14 @@ public interface SessionsCommand extends Jsonable {
             this.userId = userId;
         }
     }
+    @SuppressWarnings("serial")
+    @Immutable
+    @JsonDeserialize
+    class GetSession implements SessionsCommand, CompressedJsonable, PersistentEntity.ReplyType<Option<Session>> {
+        public final String sessionId;
+        @JsonCreator
+        public GetSession(String userId) {
+            this.sessionId = userId;
+        }
+    }
 }
