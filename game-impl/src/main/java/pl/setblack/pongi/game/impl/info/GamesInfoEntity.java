@@ -13,6 +13,13 @@ public class GamesInfoEntity extends PersistentEntity<GamesInfoCommand, GamesInf
         final BehaviorBuilder b = newBehaviorBuilder(
                 snapshotState.orElse(new GamesInfo()));
 
+        b.setReadOnlyCommandHandler( GamesInfoCommand.GetList.class,
+                (cmd,ctx) ->
+                        ctx.reply( state()
+                                .allGames)
+
+        );
+
         return  b.build();
     }
 }

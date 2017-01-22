@@ -31,7 +31,6 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public HeaderServiceCall<NewUser, RegUserStatus> addUser(String id) {
-
         return (reqHeaders, postedUser) -> {
             System.out.println(reqHeaders.getHeader("Referer"));
             PersistentEntityRef<UserCommand> ref = persistentEntityRegistry.refFor(UserEntity.class, id);
@@ -48,7 +47,6 @@ public class UsersServiceImpl implements UsersService {
     }
 
     private CompletionStage<Option<Session>> createSession(final String userId , boolean logged) {
-        System.out.println("no whodze:" + logged);
         if (logged) {
               PersistentEntityRef< SessionsCommand> ref = persistentEntityRegistry
                     .refFor(SessionsEntity.class, "global");

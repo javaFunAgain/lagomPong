@@ -5,11 +5,13 @@ package pl.setblack.pongi.game.impl;
 
 import com.google.inject.AbstractModule;
 import com.lightbend.lagom.javadsl.server.ServiceGuiceSupport;
+import pl.setblack.pongi.users.UsersService;
 
 
 public class GamesModule extends AbstractModule implements ServiceGuiceSupport {
   @Override
   protected void configure() {
     bindServices(serviceBinding(GamesService.class, GamesServiceImpl.class));
+    bindClient(UsersService.class);
   }
 }
