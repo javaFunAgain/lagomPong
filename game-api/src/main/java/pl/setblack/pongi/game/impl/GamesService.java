@@ -5,6 +5,7 @@ import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import javaslang.collection.List;
+import javaslang.control.Option;
 import scala.Unit;
 
 import static com.lightbend.lagom.javadsl.api.Service.named;
@@ -16,7 +17,7 @@ import static com.lightbend.lagom.javadsl.api.Service.pathCall;
 public interface GamesService extends Service{
     ServiceCall<NotUsed, List<GameInfo>> games();
 
-    ServiceCall<String, GameInfo> create();
+    ServiceCall<String, Option<GameInfo>> create();
 
     ServiceCall<String, GameState> join();
 

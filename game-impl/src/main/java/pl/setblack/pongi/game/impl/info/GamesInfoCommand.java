@@ -24,4 +24,14 @@ public interface GamesInfoCommand extends Jsonable {
 
         }
     }
+    @SuppressWarnings("serial")
+    @Immutable
+    @JsonDeserialize
+    class Create implements GamesInfoCommand , CompressedJsonable, PersistentEntity.ReplyType<GameInfo>{
+        public final String name;
+        @JsonCreator
+        public Create(String name) {
+            this.name = name;
+        }
+    }
 }

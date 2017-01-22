@@ -1,3 +1,6 @@
 curl --data '{"password": "ucpa"}' http://localhost:9000/api/users/login/iiaa
 
-curl http://localhost:9000/api/users/session/""
+curl http://localhost:9000/api/users/session/XXX
+
+
+curl -v --header "Authorization: Bearer ffb0118e-c8ff-4e91-87c7-1228ce3f8ed7" --header "Content-Type: text/plain" --data "kuzek" http://localhost:9000/api/games/create
