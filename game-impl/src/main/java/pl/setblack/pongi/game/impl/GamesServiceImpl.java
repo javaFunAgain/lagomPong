@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -45,6 +44,23 @@ public class GamesServiceImpl implements GamesService {
         }, ()->List.empty() );
     }
 
+
+
+    @Override
+    public HeaderServiceCall<String, Option<GameInfo>> create() {
+        return runSecure((session, gameName) -> {
+
+            PersistentEntityRef<GamesInfoCommand> ref = persistentEntityRegistry.refFor(GamesInfoEntity.class, "global");
+            return ref.ask(new GamesInfoCommand.Create(gameName, session.userId))
+                    .thenApply(Option::some);
+        }, ()->Option.none() );
+    }
+
+    @Override
+    public ServiceCall<String, GameState> join() {
+        return null;
+    }
+
     private <T,REQ> HeaderServiceCall<REQ, T > runSecure(BiFunction<Session, REQ, CompletionStage<T>> privilegedAction,
                                                          Supplier<T> insecureResult) {
         return (reqHeaders, requestData) -> {
@@ -59,7 +75,7 @@ public class GamesServiceImpl implements GamesService {
                     session-> {
                         System.out.println("session is:" + session);
                         return session.map(ses-> privilegedAction.apply(ses, requestData)).getOrElse(CompletableFuture.completedFuture(insecureResult.get()))
-                        .thenApply( stat-> Pair.create(getResponseStatus(session), stat));
+                                .thenApply( stat-> Pair.create(getResponseStatus(session), stat));
                     }
             );
 
@@ -68,20 +84,5 @@ public class GamesServiceImpl implements GamesService {
 
     private ResponseHeader getResponseStatus(final Option<Session> session) {
         return session.map( any -> ResponseHeader.OK).getOrElse( new ResponseHeader(401, new MessageProtocol(), HashTreePMap.empty()));
-    }
-
-    @Override
-    public HeaderServiceCall<String, Option<GameInfo>> create() {
-        return runSecure((session, gameName) -> {
-
-            PersistentEntityRef<GamesInfoCommand> ref = persistentEntityRegistry.refFor(GamesInfoEntity.class, "global");
-            return ref.ask(new GamesInfoCommand.Create(gameName))
-                    .thenApply(Option::some);
-        }, ()->Option.none() );
-    }
-
-    @Override
-    public ServiceCall<String, GameState> join() {
-        return null;
     }
 }

@@ -2,24 +2,24 @@ package pl.setblack.pongi.game.impl.info;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
-import com.lightbend.lagom.serialization.CompressedJsonable;
-import javaslang.collection.List;
-import javaslang.control.Option;
+import com.lightbend.lagom.serialization.Jsonable;
 import pl.setblack.pongi.game.impl.GameInfo;
 
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Created by jarek on 1/22/17.
- */
-public class GamesInfoEvent {
+public interface GamesInfoEvent extends Jsonable {
 
     @SuppressWarnings("serial")
     @Immutable
     @JsonDeserialize
-    class GetList implements GamesInfoCommand, CompressedJsonable, PersistentEntity.ReplyType<List<GameInfo>> {
+    final class GameCreated implements  GamesInfoEvent {
+        public final GameInfo game;
 
+        @JsonCreator
+        public GameCreated(GameInfo game) {
 
+            this.game = game;
+        }
     }
+
 }

@@ -28,10 +28,14 @@ public interface GamesInfoCommand extends Jsonable {
     @Immutable
     @JsonDeserialize
     class Create implements GamesInfoCommand , CompressedJsonable, PersistentEntity.ReplyType<GameInfo>{
-        public final String name;
+        public final String  name;
+        public final String userId;
+
         @JsonCreator
-        public Create(String name) {
+        public Create(String name, String userId) {
+
             this.name = name;
+            this.userId = userId;
         }
     }
 }
