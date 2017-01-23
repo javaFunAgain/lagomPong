@@ -42,6 +42,14 @@ object Pong {
       })
     }
 
+    def joinGame(uuid : String) = {
+
+    }
+
+    def createGame(name : String ) = {
+        api.createGame(name).onComplete( _ => toGameList())
+    }
+
   }
 
   val  page =

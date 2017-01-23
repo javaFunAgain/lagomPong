@@ -18,6 +18,8 @@ public class GamesInfoEntity extends PersistentEntity<GamesInfoCommand, GamesInf
         b.setEventHandler(GamesInfoEvent.GameCreated.class,
                 evt -> state().withGame(evt.game));
 
+        b.setEventHandler(GamesInfoEvent.GameJoined.class,
+                evt -> state().joinGame(evt.gameId, evt.userId));
 
         b.setCommandHandler( GamesInfoCommand.Create.class,
                 (cmd,ctx) -> {
@@ -34,6 +36,13 @@ public class GamesInfoEntity extends PersistentEntity<GamesInfoCommand, GamesInf
                 (cmd,ctx) ->
                         ctx.reply( state()
                                 .allGames)
+
+        );
+
+        b.setCommandHandler( GamesInfoCommand.JoinGame.class,
+                (cmd,ctx) ->
+                        ctx.thenPersist(new GamesInfoEvent.GameJoined(cmd.gameId, cmd.userId),
+                                ev -> ctx.reply( state().findGame(cmd.gameId)))
 
         );
 

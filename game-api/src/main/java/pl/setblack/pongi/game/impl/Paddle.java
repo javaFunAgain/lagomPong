@@ -2,23 +2,17 @@ package pl.setblack.pongi.game.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import javaslang.Tuple2;
 
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Created by jarek on 1/23/17.
+ */
 @Immutable
 @JsonDeserialize
-public class GameState {
-
-    public final Ball ball;
-    public final Tuple2<Player, Player> players;
-
+public class Paddle extends GameObject {
     @JsonCreator
-    public GameState(Ball ball, Tuple2<Player, Player> players) {
-        this.ball = ball;
-        this.players = players;
+    public Paddle(float x, float y) {
+        super(x, y);
     }
-
-
-
 }

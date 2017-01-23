@@ -6,6 +6,7 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
 import javaslang.collection.List;
+import javaslang.control.Option;
 import pl.setblack.pongi.game.impl.GameInfo;
 
 import javax.annotation.concurrent.Immutable;
@@ -24,6 +25,20 @@ public interface GamesInfoCommand extends Jsonable {
 
         }
     }
+
+    @SuppressWarnings("serial")
+    @Immutable
+    @JsonDeserialize
+    class JoinGame implements GamesInfoCommand , CompressedJsonable, PersistentEntity.ReplyType<Option<GameInfo>>{
+        final String gameId;
+        final String userId;
+        @JsonCreator
+        public JoinGame(String gameId, String userId) {
+            this.gameId = gameId;
+            this.userId = userId;
+        }
+    }
+
     @SuppressWarnings("serial")
     @Immutable
     @JsonDeserialize

@@ -30,7 +30,17 @@ public class GamesInfo{
     }
 
     public GamesInfo joinGame(final String gameId, final String userId) {
-        throw new UnsupportedOperationException();
+        final Option<GameInfo> game = findGame(gameId);
+        final Option<GameInfo> newOne =
+                game.flatMap ( oldGame -> oldGame.withPlayer(userId));
+        return newOne.map( newGame ->
+            new GamesInfo(this.allGames
+                    .removeAll(g->g.uuid.equals(gameId))
+                    .append(newGame))
+        ).getOrElse(this);
     }
 
+    public Option<GameInfo> findGame(String gameId) {
+        return this.allGames.filter( gi -> gi.uuid.equals(gameId)).headOption();
+    }
 }

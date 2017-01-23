@@ -17,8 +17,19 @@ public interface GamesInfoEvent extends Jsonable {
 
         @JsonCreator
         public GameCreated(GameInfo game) {
-
             this.game = game;
+        }
+    }
+
+    @JsonDeserialize
+    final class GameJoined implements  GamesInfoEvent {
+        public final String gameId;
+        public final String userId;
+        @JsonCreator
+        public GameJoined(String gameId, String userId) {
+
+            this.gameId = gameId;
+            this.userId = userId;
         }
     }
 

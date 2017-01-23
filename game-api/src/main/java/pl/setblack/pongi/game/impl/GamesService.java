@@ -19,14 +19,15 @@ public interface GamesService extends Service{
 
     ServiceCall<String, Option<GameInfo>> create();
 
-    ServiceCall<String, GameState> join();
+    ServiceCall<String, Option<GameState>> join();
 
     @Override
     default Descriptor descriptor() {
         // @formatter:off
         return named("games").withCalls(
                 pathCall("/api/games/games",  this::games),
-                pathCall("/api/games/create",  this::create)
+                pathCall("/api/games/create",  this::create),
+                pathCall("/api/games/join",  this::join)
         ).withAutoAcl(true);
         // @formatter:on
     }

@@ -2,11 +2,14 @@ package pl.setblack.pongi.web.api
 
 import scala.scalajs.js.annotation.JSExportAll
 import org.scalajs.jquery.{JQueryAjaxSettings, JQueryPromise, jQuery}
+import pl.setblack.pongi.web.pong.GameState
 import upickle.Js
 
 import scala.scalajs.js
+import js.JSConverters._
 import upickle.default._
 
+import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.JSON
 
@@ -15,6 +18,8 @@ import scala.scalajs.js.JSON
   * Created by jarek on 1/22/17.
   */
 class ServerApi {
+  import scala.concurrent.ExecutionContext.Implicits.global
+
   var session:Option[Session] = None
 
   case class NewUser(password: String)
@@ -47,21 +52,49 @@ class ServerApi {
     result.future
   }
 
+  def joinGame(gameId : String) : Future[GameState] = {
+    doAjax("/api/games/join", Some(gameId))
+      .map( str => read[GameState](str))
+  }
+
+  def createGame(name : String) : Future[GameInfo] = {
+    doAjax("/api/games/create", Some(name))
+      .map( str => read[GameInfo](str))
+  }
+
 
   def listGames() : Future[Seq[GameInfo]] = {
-    val settings :JQueryAjaxSettings = js.Dictionary(
-      "dataType" -> "text",
-      "headers" -> js.Dictionary( "Authorization"-> ("Bearer "+ session.map( s=>s.uuid).getOrElse("")))
-    ).asInstanceOf[JQueryAjaxSettings]
+      doAjax("/api/games/games")
+      .map( str => read[Seq[GameInfo]](str))
+  }
 
-    val result = Promise[Seq[GameInfo]]
-    jQuery.ajax("/api/games/games", settings)
+  def  doAjax(url: String, data: Option[String]= None) : Future[String] = {
+    val baseSettings = Map(
+      "dataType" -> "text",
+      "contentType" -> "text/plain",
+      "headers" -> createAuthorizationHeader)
+    val settinegsMap = data.map ( input => {
+      baseSettings ++ Map( "method" -> "POST",
+        "data" -> input)
+    }).getOrElse(baseSettings)
+
+    val settings :JQueryAjaxSettings =
+      settinegsMap
+        .toJSDictionary
+        .asInstanceOf[JQueryAjaxSettings]
+
+
+    val result = Promise[String]
+    jQuery.ajax(url, settings)
       .asInstanceOf[JQueryPromise]
       .done( (response:String) => {
-          val games = read[Seq[GameInfo]](response)
-          result.success(games)
+          result.success(response)
       })
 
     result.future
+  }
+
+  private def createAuthorizationHeader = {
+    js.Dictionary("Authorization" -> ("Bearer " + session.map(s => s.uuid).getOrElse("")))
   }
 }

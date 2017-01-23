@@ -13,6 +13,8 @@ import javaslang.control.Option;
 import org.pcollections.HashTreePMap;
 import pl.setblack.pongi.game.impl.info.GamesInfoCommand;
 import pl.setblack.pongi.game.impl.info.GamesInfoEntity;
+import pl.setblack.pongi.game.impl.state.GameStateCommand;
+import pl.setblack.pongi.game.impl.state.GameStateEntity;
 import pl.setblack.pongi.users.Session;
 import pl.setblack.pongi.users.UsersService;
 
@@ -34,6 +36,7 @@ public class GamesServiceImpl implements GamesService {
         this.usersService = usersService;
         this.persistentEntityRegistry = persistentEntityRegistry;
         this.persistentEntityRegistry.register(GamesInfoEntity.class);
+        this.persistentEntityRegistry.register(GameStateEntity.class);
     }
 
     @Override
@@ -57,8 +60,18 @@ public class GamesServiceImpl implements GamesService {
     }
 
     @Override
-    public ServiceCall<String, GameState> join() {
-        return null;
+    public ServiceCall<String, Option<GameState>> join() {
+       return runSecure((session, gameId) -> {
+           final PersistentEntityRef<GamesInfoCommand> infoRef = persistentEntityRegistry.refFor(GamesInfoEntity.class, "global");
+           return infoRef.ask(new GamesInfoCommand.JoinGame(gameId, session.userId))
+                   .thenCompose((Option<GameInfo> gameInfoOption)->
+                       gameInfoOption.map( gameInfo ->{
+                           final PersistentEntityRef<GameStateCommand> gameStateRef = persistentEntityRegistry.refFor(GameStateEntity.class, gameId);
+                           return gameStateRef.ask(new GameStateCommand.StartGame(gameInfo));
+                       }).getOrElse(CompletableFuture.completedFuture(Option.none()))
+                   );
+
+        }, ()->Option.<GameState>none() );
     }
 
     private <T,REQ> HeaderServiceCall<REQ, T > runSecure(BiFunction<Session, REQ, CompletionStage<T>> privilegedAction,
