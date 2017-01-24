@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javaslang.Tuple2;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.function.Function;
 
 @Immutable
 @JsonDeserialize
@@ -36,9 +37,16 @@ public class GameState {
         long diff = newTime - this.updateTime;
         float scale = diff / 1000.0f;
         final Ball newBallPos = this.ball.move(scale).bounce();
+        final Function<Player,Player> movePaddle = player -> player.movePaddle(diff);
 
-        return new GameState(newBallPos, this.players,newTime);
+        final Tuple2<Player,Player> newPlayers = this.players.map(movePaddle,movePaddle);
+        return new GameState(newBallPos, newPlayers,newTime);
     }
 
 
+    public GameState playerMovingTo(String userId, float targetY) {
+        final Function<Player,Player> movePaddle = player -> player.makeMoving(userId, targetY);
+        final Tuple2<Player,Player> newPlayers = this.players.map(movePaddle,movePaddle);
+        return new GameState(this.ball, newPlayers,this.updateTime);
+    }
 }

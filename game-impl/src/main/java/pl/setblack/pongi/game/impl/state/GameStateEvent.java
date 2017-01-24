@@ -28,6 +28,19 @@ public interface GameStateEvent extends Jsonable {
     @SuppressWarnings("serial")
     @Immutable
     @JsonDeserialize
+    final class PlayerMovingTo implements GameStateEvent {
+        public final String userId;
+        public final float targetY;
+
+        public PlayerMovingTo(String userId, float targetY) {
+            this.userId = userId;
+            this.targetY = targetY;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    @Immutable
+    @JsonDeserialize
     final class GameCycle implements GameStateEvent {
         final long time;
         @JsonCreator

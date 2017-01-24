@@ -57,6 +57,11 @@ class ServerApi {
       .map( str => read[GameState](str))
   }
 
+  def movePaddle(gameId : String, targetY : Double) : Future[Boolean] = {
+    doAjax("/api/games/move/"+gameId, Some(targetY.toString))
+      .map( str => true)
+  }
+
   def getGame(gameId : String) : Future[GameState] = {
     doAjax("/api/games/"+gameId)
       .map( str => read[GameState](str))

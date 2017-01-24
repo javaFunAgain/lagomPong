@@ -1,5 +1,6 @@
 package pl.setblack.pongi.game.impl;
 
+import akka.Done;
 import akka.NotUsed;
 import akka.japi.Pair;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
@@ -79,6 +80,16 @@ public class GamesServiceImpl implements GamesService {
             return ref.ask(new GameStateCommand.GetGame(uuid));
         }, ()->Option.none() );
     }
+
+
+    public HeaderServiceCall<String, Done> movePaddle(final String gameId) {
+        return runSecure((session, newPosition) -> {
+            float targetY = Float.parseFloat(newPosition);
+            PersistentEntityRef<GameStateCommand> ref = persistentEntityRegistry.refFor(GameStateEntity.class, gameId);
+            return ref.ask(new GameStateCommand.MovePlayerPaddle(session.userId, targetY));
+        }, ()->Done.getInstance() );
+    }
+
 
     @Override
     public HeaderServiceCall<String, Option<GameInfo>> create() {

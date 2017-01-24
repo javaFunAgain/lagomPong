@@ -22,10 +22,7 @@ class GameLoop {
 
 
 
-  object KeyState extends Enumeration {
-    type State = Value
-    val Up, Down, Neutral = Value
-  }
+
 
 
 
@@ -52,6 +49,8 @@ class GameLoop {
 
   }
 
+
+
   private def scanKeys = {
     val active = playerKeys.filter( tp => tp._2)
     val player1 = active.filter( tp => tp._1._1 == 1)
@@ -62,8 +61,10 @@ class GameLoop {
 
     val player1Key = getCommand( player1)
     val player2Key = getCommand( player2)
-    if ( player1Key != KeyState.Neutral)
+    if ( player1Key != KeyState.Neutral) {
       println(s"player1 : ${player1Key}")
+      Pong.getMainBackend.foreach(pb => pb.movePaddle(player1Key) )
+    }
     if ( player2Key != KeyState.Neutral)
     println(s"player2 : ${player2Key}")
 
@@ -83,4 +84,8 @@ class GameLoop {
     )
   }
 
+}
+object KeyState extends Enumeration {
+  type State = Value
+  val Up, Down, Neutral = Value
 }

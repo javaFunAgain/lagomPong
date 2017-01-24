@@ -1,5 +1,6 @@
 package pl.setblack.pongi.game.impl.state;
 
+import akka.Done;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
@@ -48,6 +49,19 @@ public interface GameStateCommand extends Jsonable {
         public final long time;
         public PushGameLoop(long time) {
             this.time = time;
+        }
+
+    }
+
+    @SuppressWarnings("serial")
+    @Immutable
+    @JsonDeserialize
+    class MovePlayerPaddle implements GameStateCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
+        public final String userId;
+        public final float targetY;
+        public MovePlayerPaddle(String userId, float targetY) {
+            this.userId = userId;
+            this.targetY = targetY;
         }
 
     }

@@ -18,4 +18,16 @@ public class Player {
         this.name = name;
         this.paddle = paddle;
     }
+
+    public Player movePaddle(long dist) {
+        return new Player(this.score, this.name, this.paddle.paddleMove(dist));
+    }
+
+    public Player makeMoving(String userId, float targetY) {
+        if ( this.name.equals(userId)) {
+            return new Player(this.score, this.name, this.paddle.movingTo(targetY));
+        } else{
+            return this;
+        }
+    }
 }

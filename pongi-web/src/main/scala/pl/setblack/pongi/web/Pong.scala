@@ -3,8 +3,8 @@ package pl.setblack.pongi.web
 import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactElement}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import pl.setblack.pongi.web.api.{GameInfo, ServerApi}
-import pl.setblack.pongi.web.pong.GameState
-
+import pl.setblack.pongi.web.pong.{GameState, KeyState, Player}
+import pl.setblack.pongi.web.pong.KeyState.State
 /**
   * Created by jarek on 1/22/17.
   */
@@ -29,7 +29,6 @@ object Pong {
     def server = api
 
     def render(state: PongClientState): ReactElement = {
-      println(s"I have such state: $state")
       val elem: Option[ReactElement] = state.welcome.map(ws => {
         Welcome.page()
       })
@@ -45,10 +44,37 @@ object Pong {
       })
     }
 
+    def movePlayer(gameId: String, player1Key: State, aplayer: Player) = {
+        this.api.session
+          .filter( sess => sess.userId==aplayer.name)
+         .foreach(_ => {
+           val currentPaddle = aplayer.paddle.y
+           val newTarget = player1Key  match {
+             case KeyState.Up => currentPaddle - 0.1;
+             case KeyState.Down => currentPaddle + 0.1;
+             case _ => currentPaddle
+           }
+           val sanitized = Math.min(Math.max(0f, newTarget),1.0f)
+           this.api.movePaddle(gameId, sanitized)
+         })
+    }
+
+    def movePaddle(player1Key: KeyState.State) = {
+        $.state.map(
+          ps => ps.currentGame
+            .foreach(
+              game => {
+                movePlayer(game.uuid, player1Key, game.state.players._1)
+                movePlayer(game.uuid, player1Key, game.state.players._2)
+              })).runNow()
+
+    }
+
+
+
     def refresh() = {
       $.state.map(
         ps => {
-          println("refreshing....")
           ps.currentGame
             .map(
               game => {
