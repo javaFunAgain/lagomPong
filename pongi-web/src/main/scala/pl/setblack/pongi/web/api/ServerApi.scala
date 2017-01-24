@@ -57,6 +57,12 @@ class ServerApi {
       .map( str => read[GameState](str))
   }
 
+  def getGame(gameId : String) : Future[GameState] = {
+    doAjax("/api/games/"+gameId)
+      .map( str => read[GameState](str))
+  }
+
+
   def createGame(name : String) : Future[GameInfo] = {
     doAjax("/api/games/create", Some(name))
       .map( str => read[GameInfo](str))

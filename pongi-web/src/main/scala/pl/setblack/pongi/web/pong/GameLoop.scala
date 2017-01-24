@@ -2,6 +2,8 @@ package pl.setblack.pongi.web.pong
 
 import org.scalajs.dom.raw.KeyboardEvent
 import org.scalajs.dom.document
+import pl.setblack.pongi.web.Pong
+
 import scala.scalajs.js
 
 /**
@@ -25,14 +27,19 @@ class GameLoop {
     val Up, Down, Neutral = Value
   }
 
-  init
 
-  private def init: Unit = {
+
+  def init: Unit = {
+    println("inited...")
+
     document.onkeydown =  keyDown
 
     document.onkeyup = keyUp
 
-    js.timers.setInterval(500) {scanKeys}
+    js.timers.setInterval(200) {
+      scanKeys
+      Pong.getMainBackend.foreach( pb => pb.refresh())
+    }
 
   }
 

@@ -30,4 +30,8 @@ public class InternalGameState {
         final float x = (float)playerNr -1;
         return  new Paddle(x, 0.5f);
     }
+
+    public InternalGameState push(long time) {
+        return new InternalGameState(this.game.map( state->state.push(time)));
+    }
 }

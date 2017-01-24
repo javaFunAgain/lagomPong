@@ -30,4 +30,12 @@ public class Vector2D {
         return new Vector2D(nx,ny);
     }
 
+    public Vector2D bounceX() {
+        return new Vector2D(-this.x, this.y);
+    }
+
+    public Vector2D bounceY() {
+        return new Vector2D(this.x, -this.y);
+    }
+
 }

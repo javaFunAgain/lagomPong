@@ -21,13 +21,15 @@ public interface GamesService extends Service{
 
     ServiceCall<String, Option<GameState>> join();
 
+    ServiceCall<NotUsed, Option<GameState>> getGame(String uuid);
     @Override
     default Descriptor descriptor() {
         // @formatter:off
         return named("games").withCalls(
                 pathCall("/api/games/games",  this::games),
                 pathCall("/api/games/create",  this::create),
-                pathCall("/api/games/join",  this::join)
+                pathCall("/api/games/join",  this::join),
+                pathCall("/api/games/:uuid",  this::getGame)
         ).withAutoAcl(true);
         // @formatter:on
     }

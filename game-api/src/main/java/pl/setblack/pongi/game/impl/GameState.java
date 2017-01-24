@@ -32,5 +32,13 @@ public class GameState {
 
     }
 
+    public GameState push(long newTime) {
+        long diff = newTime - this.updateTime;
+        float scale = diff / 1000.0f;
+        final Ball newBallPos = this.ball.move(scale).bounce();
+
+        return new GameState(newBallPos, this.players,newTime);
+    }
+
 
 }

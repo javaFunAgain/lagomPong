@@ -26,4 +26,33 @@ public class Ball extends GameObject {
     public Ball withSpeed( Vector2D newSpeed) {
         return new Ball(this.x,this.y, newSpeed);
     }
+
+    public Ball move(float scale) {
+        return new Ball( this.x + speed.x*scale, this.y + speed.y*scale, this.speed);
+    }
+
+    public Ball bounceX() {
+        if ( this.x < 0 && speed.x < 0) {
+            return new Ball(0f, this.y, this.speed.bounceX());
+        }
+        if ( this.x > 1.0f && speed.x > 0) {
+            return new Ball(1f, this.y, this.speed.bounceX());
+        }
+        return this;
+    }
+    public Ball bounceY() {
+        if ( this.y < 0 && speed.y < 0) {
+            return new Ball(this.x, 0f, this.speed.bounceY());
+        }
+        if ( this.y > 1.0f && speed.x > 0) {
+            return new Ball(this.x, 1.0f, this.speed.bounceY());
+        }
+        return this;
+    }
+
+
+    public Ball bounce() {
+        return this.bounceY().bounceX();
+    }
 }
+

@@ -33,13 +33,22 @@ public interface GameStateCommand extends Jsonable {
     @SuppressWarnings("serial")
     @Immutable
     @JsonDeserialize
-    class PushGameLoop implements GameStateCommand, CompressedJsonable, PersistentEntity.ReplyType<GameState> {
+    class GetGame implements GameStateCommand, CompressedJsonable, PersistentEntity.ReplyType<Option<GameState>> {
+        public final String uuid;
+        @JsonCreator
+        public GetGame(String uuid) {
+            this.uuid = uuid;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    @Immutable
+    @JsonDeserialize
+    class PushGameLoop implements GameStateCommand, CompressedJsonable, PersistentEntity.ReplyType<Option<GameState>> {
         public final long time;
         public PushGameLoop(long time) {
             this.time = time;
         }
-
-
 
     }
 }

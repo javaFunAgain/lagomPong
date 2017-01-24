@@ -20,8 +20,8 @@ import pl.setblack.pongi.users.UsersService;
 
 import javax.inject.Inject;
 import java.time.Clock;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -34,12 +34,33 @@ public class GamesServiceImpl implements GamesService {
 
     private final Clock clock = Clock.systemUTC();
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private final AtomicLong sanityCounter = new AtomicLong();
+
     @Inject
     public GamesServiceImpl(UsersService usersService, PersistentEntityRegistry persistentEntityRegistry) {
         this.usersService = usersService;
         this.persistentEntityRegistry = persistentEntityRegistry;
         this.persistentEntityRegistry.register(GamesInfoEntity.class);
         this.persistentEntityRegistry.register(GameStateEntity.class);
+
+        this.scheduler.scheduleAtFixedRate(()->pushGames(), 1000, 100,TimeUnit.MILLISECONDS);
+    }
+
+    private void pushGames() {
+        long sanity = this.sanityCounter.decrementAndGet();
+        if ( sanity > 0) {
+            PersistentEntityRef<GamesInfoCommand> gameListRef = persistentEntityRegistry.refFor(GamesInfoEntity.class, "global");
+            gameListRef.ask(new GamesInfoCommand.GetList())
+                    .thenAccept((List<GameInfo> gameList) -> {
+                        gameList.forEach((GameInfo game) -> {
+                            PersistentEntityRef<GameStateCommand> gameStateRef = persistentEntityRegistry.refFor(GameStateEntity.class, game.uuid);
+                            gameStateRef.ask(new GameStateCommand.PushGameLoop(clock.millis()));
+                        });
+
+                    });
+        }
     }
 
     @Override
@@ -50,7 +71,14 @@ public class GamesServiceImpl implements GamesService {
         }, ()->List.empty() );
     }
 
-
+    @Override
+    public HeaderServiceCall<NotUsed, Option<GameState>> getGame(String uuid) {
+        return runSecure((session,ignored) -> {
+            this.sanityCounter.set(20);
+            PersistentEntityRef<GameStateCommand> ref = persistentEntityRegistry.refFor(GameStateEntity.class, uuid);
+            return ref.ask(new GameStateCommand.GetGame(uuid));
+        }, ()->Option.none() );
+    }
 
     @Override
     public HeaderServiceCall<String, Option<GameInfo>> create() {

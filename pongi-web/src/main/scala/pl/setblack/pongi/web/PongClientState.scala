@@ -11,6 +11,8 @@ case class PongClientState(
                           games : Option[Seq[GameInfo]],
                           currentGame: Option[CurrentGameWrapper]
                           ) {
+
+
   def this()  = this(Some(Welcome.WelcomeState()), None,None)
 
 
@@ -21,6 +23,9 @@ case class PongClientState(
   def toGame( uuid: String, gameState : GameState): PongClientState = {
     PongClientState(None, None, Some(CurrentGameWrapper(uuid, gameState)))
   }
+
+  def withState(uuid: String, gameState: GameState) = toGame(uuid, gameState )
+
 
 }
 

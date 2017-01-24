@@ -53,6 +53,7 @@ object PlayField {
   }
 
   private def toPercent(v :Float) : String = {
-    s"${Math.round( v*100f).toString}%"
+    val inPercent = v*100f
+    f"$inPercent%111.1f%%"
   }
 }

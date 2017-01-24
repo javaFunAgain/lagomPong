@@ -21,9 +21,7 @@ object Main extends JSApp{
 
 
     val gameLoop  = new GameLoop
-
-
-
+    gameLoop.init
 
     val myState = new PongClientState
 
