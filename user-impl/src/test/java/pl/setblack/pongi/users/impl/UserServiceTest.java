@@ -1,6 +1,5 @@
 package pl.setblack.pongi.users.impl;
 
-import com.lightbend.lagom.javadsl.api.transport.RequestHeader;
 import org.junit.Test;
 import pl.setblack.pongi.users.NewUser;
 import pl.setblack.pongi.users.RegUserStatus;
@@ -16,13 +15,23 @@ import static org.junit.Assert.assertEquals;
  */
 public class UserServiceTest {
     @Test
-    public void testIt() {
-        withServer(defaultSetup(), server -> {
+    public void testSingleCreateUser() {
+        withServer(defaultSetup().withCassandra(true), server -> {
             UsersService service = server.client(UsersService.class);
-            RegUserStatus created = service.addUser("aaa").handleRequestHeader(
-                    rh -> rh.withHeader("Referer" ,"winter")
-            ).invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
-            assertEquals(true, created.ok); // default greeting
+            RegUserStatus created = service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
+            assertEquals(true, created.ok);
+
+        });
+    }
+
+    @Test
+    public void testDoubleCreateUser() {
+        withServer(defaultSetup().withCassandra(true), server -> {
+            UsersService service = server.client(UsersService.class);
+            RegUserStatus created1st = service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
+            RegUserStatus created2nd= service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
+
+            assertEquals(true, created2nd.ok);
 
         });
     }
