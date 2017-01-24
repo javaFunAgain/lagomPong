@@ -5,6 +5,7 @@ import javaslang.control.Option;
 import pl.setblack.pongi.game.impl.*;
 
 import javax.annotation.concurrent.Immutable;
+import java.time.Clock;
 
 /**
  * Created by jarek on 1/23/17.
@@ -17,12 +18,12 @@ public class InternalGameState {
         this.game = game;
     }
 
-    public static InternalGameState startFrom(GameInfo info) {
+    public static InternalGameState startFrom(GameInfo info, long  startTime) {
         final Ball ball = new Ball(0.5f, 0.5f);
         final Player player1 = new Player(0, info.players.get(0), createPaddle(1));
         final Player player2 = new Player(0, info.players.get(1), createPaddle(2));
-        final GameState state = new GameState(ball, Tuple.of(player1,player2));
-        return new InternalGameState(Option.some(state));
+        final GameState state = new GameState(ball, Tuple.of(player1,player2), startTime);
+        return new InternalGameState(Option.some(state.start(startTime)));
     }
 
     private static Paddle createPaddle(int playerNr) {

@@ -17,9 +17,11 @@ public interface GameStateEvent extends Jsonable {
     @JsonDeserialize
     final class GameStarted implements GameStateEvent {
         public final GameInfo info;
+        public final long startTime;
 
-        public GameStarted(GameInfo info) {
+        public GameStarted(GameInfo info, long startTime) {
             this.info = info;
+            this.startTime = startTime;
         }
     }
 

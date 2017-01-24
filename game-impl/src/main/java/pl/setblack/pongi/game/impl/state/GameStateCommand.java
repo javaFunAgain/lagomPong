@@ -21,10 +21,12 @@ public interface GameStateCommand extends Jsonable {
     @JsonDeserialize
     class StartGame implements GameStateCommand, CompressedJsonable, PersistentEntity.ReplyType<Option<GameState>> {
         public final GameInfo gameInfo;
+        public final long startTime;
 
         @JsonCreator
-        public StartGame(GameInfo gameInfo) {
+        public StartGame(GameInfo gameInfo, long startTime) {
             this.gameInfo = gameInfo;
+            this.startTime = startTime;
         }
     }
 

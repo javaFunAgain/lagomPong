@@ -6,7 +6,6 @@ package pl.setblack.pongi.web.pong
 case class Player(
                    score : Int,
                    name : String,
-                   sessionId :String,
                    paddle :Paddle) {
 
 }

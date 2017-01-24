@@ -2,7 +2,8 @@ package pl.setblack.pongi.web
 
 import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactElement}
 import japgolly.scalajs.react.vdom.prefix_<^._
-import pl.setblack.pongi.web.api.ServerApi
+import pl.setblack.pongi.web.api.{GameInfo, ServerApi}
+import pl.setblack.pongi.web.pong.GameState
 
 /**
   * Created by jarek on 1/22/17.
@@ -33,6 +34,7 @@ object Pong {
       })
         elem
           .orElse(state.games.map( list => GamesList.page(list)))
+            .orElse( state.currentGame.map( game =>PlayField.GameStateComponent(game.state) ))
           .getOrElse(<.p("empty one"))
     }
 
@@ -42,8 +44,13 @@ object Pong {
       })
     }
 
-    def joinGame(uuid : String) = {
+    def toGame(uuid: String, state: GameState ) = {
+      println(s"going to game ${uuid}")
+      $.modState( ps => ps.toGame(uuid, state)).runNow()
+    }
 
+    def joinGame(uuid : String) = {
+      api.joinGame(uuid).onComplete( state => toGame(uuid,state.get))
     }
 
     def createGame(name : String ) = {

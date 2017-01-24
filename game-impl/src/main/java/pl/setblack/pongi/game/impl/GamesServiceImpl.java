@@ -19,6 +19,7 @@ import pl.setblack.pongi.users.Session;
 import pl.setblack.pongi.users.UsersService;
 
 import javax.inject.Inject;
+import java.time.Clock;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
@@ -30,6 +31,8 @@ public class GamesServiceImpl implements GamesService {
     private final PersistentEntityRegistry persistentEntityRegistry;
 
     private  final UsersService usersService;
+
+    private final Clock clock = Clock.systemUTC();
 
     @Inject
     public GamesServiceImpl(UsersService usersService, PersistentEntityRegistry persistentEntityRegistry) {
@@ -67,7 +70,7 @@ public class GamesServiceImpl implements GamesService {
                    .thenCompose((Option<GameInfo> gameInfoOption)->
                        gameInfoOption.map( gameInfo ->{
                            final PersistentEntityRef<GameStateCommand> gameStateRef = persistentEntityRegistry.refFor(GameStateEntity.class, gameId);
-                           return gameStateRef.ask(new GameStateCommand.StartGame(gameInfo));
+                           return gameStateRef.ask(new GameStateCommand.StartGame(gameInfo, clock.millis()));
                        }).getOrElse(CompletableFuture.completedFuture(Option.none()))
                    );
 

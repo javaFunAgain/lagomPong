@@ -12,13 +12,25 @@ public class GameState {
 
     public final Ball ball;
     public final Tuple2<Player, Player> players;
+    public final long updateTime;
+
 
     @JsonCreator
-    public GameState(Ball ball, Tuple2<Player, Player> players) {
+    public GameState( Ball ball, Tuple2<Player, Player> players, long updateTime) {
         this.ball = ball;
         this.players = players;
+        this.updateTime = updateTime;
     }
 
+    public GameState start(long startTime) {
+        final double randomAngle = Math.random()*Math.PI*2.0;
+        final Vector2D speed = Vector2D.fromAngle(randomAngle, 0.01);
+        return new GameState(
+                this.ball.withSpeed(speed),
+                this.players,
+                startTime);
+
+    }
 
 
 }
