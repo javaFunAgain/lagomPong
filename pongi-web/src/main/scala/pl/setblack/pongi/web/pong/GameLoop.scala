@@ -10,7 +10,7 @@ import scala.scalajs.js
   * Created by jarek on 1/20/17.
   */
 class GameLoop {
-
+  var stopped = false
   val keysMap = Map[Int, (Int, KeyState.State)](
     81->Tuple2(1, KeyState.Up),
     65->Tuple2(1, KeyState.Down),
@@ -33,9 +33,9 @@ class GameLoop {
 
     document.onkeyup = keyUp
 
-    js.timers.setInterval(200) {
+    js.timers.setInterval(50) {
       scanKeys
-      Pong.getMainBackend.foreach( pb => pb.refresh())
+      if  (!stopped) Pong.getMainBackend.foreach( pb => pb.refresh())
     }
 
   }
@@ -74,8 +74,12 @@ class GameLoop {
   private def keyDown(ev: KeyboardEvent) = {
 
     val playerKey  = keysMap.get(ev.keyCode)
+
     playerKey.foreach( playerKeyTuple=>playerKeys   = playerKeys +  (playerKeyTuple -> true)
     )
+    if (ev.keyCode == 83) {
+        this.stopped = !this.stopped
+    }
   }
 
   private def keyUp(ev: KeyboardEvent) = {

@@ -5,6 +5,7 @@ html, body {
     width: 100%;
     height: 100%;
     font-size: 32px;
+    overflow: hidden;
 }
 
 body {
@@ -20,21 +21,22 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
-
+    overflow: hidden;
     > .playfield {
         position: absolute;
         left: 0px;
         right: 1em;
-        height: 100%;
+        top:0px;
+        bottom: 1em;
 
         > figure {
             position: absolute;
             width: 1em;
             height: 1em;
             background: white;
-            transition: left 0.5s , top 0.5s;
+            transition: left 0.01s , top 0.01s;
             &.player {
-                height: 5em;
+                height: 10%;
                 transform: translateY(-50%);
             }
             &.ball {

@@ -24,10 +24,8 @@ public class GameState {
     }
 
     public GameState start(long startTime) {
-        final double randomAngle = Math.random()*Math.PI*2.0;
-        final Vector2D speed = Vector2D.fromAngle(randomAngle, 0.01);
-        return new GameState(
-                this.ball.withSpeed(speed),
+          return new GameState(
+                Ball.random( ),
                 this.players,
                 startTime);
 
@@ -35,8 +33,8 @@ public class GameState {
 
     public GameState push(long newTime) {
         long diff = newTime - this.updateTime;
-        float scale = diff / 1000.0f;
-        final Ball newBallPos = this.ball.move(scale).bounce();
+        float scale = diff / 10.0f;
+        final Ball newBallPos = this.ball.bounce(this.players.map( pl->pl.paddle, pl->pl.paddle)).move(scale);
         final Function<Player,Player> movePaddle = player -> player.movePaddle(diff);
 
         final Tuple2<Player,Player> newPlayers = this.players.map(movePaddle,movePaddle);

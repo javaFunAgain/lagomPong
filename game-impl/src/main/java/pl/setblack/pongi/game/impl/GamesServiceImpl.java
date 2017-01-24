@@ -46,7 +46,7 @@ public class GamesServiceImpl implements GamesService {
         this.persistentEntityRegistry.register(GamesInfoEntity.class);
         this.persistentEntityRegistry.register(GameStateEntity.class);
 
-        this.scheduler.scheduleAtFixedRate(()->pushGames(), 1000, 100,TimeUnit.MILLISECONDS);
+        this.scheduler.scheduleAtFixedRate(()->pushGames(), 1000, 50,TimeUnit.MILLISECONDS);
     }
 
     private void pushGames() {
@@ -121,14 +121,13 @@ public class GamesServiceImpl implements GamesService {
         return (reqHeaders, requestData) -> {
 
             final Option<String> bearer = Option.ofOptional(reqHeaders.getHeader("Authorization"));
-            System.out.println(bearer);
+
             final CompletionStage<Option<Session>> sessionCall = bearer.map(bs -> {
                 final String sessionId = bs.replace("Bearer ","");
                 return this.usersService.session(sessionId).invoke();
             }).getOrElse(CompletableFuture.completedFuture(Option.none()));
             return sessionCall.thenCompose(
                     session-> {
-                        System.out.println("session is:" + session);
                         return session.map(ses-> privilegedAction.apply(ses, requestData)).getOrElse(CompletableFuture.completedFuture(insecureResult.get()))
                                 .thenApply( stat-> Pair.create(getResponseStatus(session), stat));
                     }
