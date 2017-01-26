@@ -20,10 +20,7 @@ public interface GamesInfoCommand extends Jsonable {
     @Immutable
     @JsonDeserialize
     class GetList implements GamesInfoCommand , CompressedJsonable, PersistentEntity.ReplyType<List<GameInfo>>{
-        @JsonCreator
-        public GetList() {
 
-        }
     }
 
     @SuppressWarnings("serial")

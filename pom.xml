@@ -29,6 +29,9 @@
                 <groupId>com.lightbend.lagom</groupId>
                 <artifactId>lagom-maven-plugin</artifactId>
                 <version>${lagom.version}</version>
+                <configuration>
+                    <cassandraCleanOnStart>false</cassandraCleanOnStart>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
