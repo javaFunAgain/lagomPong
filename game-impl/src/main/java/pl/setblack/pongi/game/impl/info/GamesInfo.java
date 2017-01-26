@@ -1,7 +1,6 @@
 package pl.setblack.pongi.game.impl.info;
 
 
-import com.lightbend.lagom.serialization.Jsonable;
 import javaslang.collection.List;
 import javaslang.control.Option;
 import pl.setblack.pongi.game.impl.GameInfo;

@@ -5,10 +5,9 @@ import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import javaslang.control.Option;
-import scala.Unit;
 
-import static com.lightbend.lagom.javadsl.api.Service.pathCall;
 import static com.lightbend.lagom.javadsl.api.Service.named;
+import static com.lightbend.lagom.javadsl.api.Service.pathCall;
 
 /**
  * Created by jarek on 1/14/17.

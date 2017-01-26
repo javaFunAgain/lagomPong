@@ -27,8 +27,8 @@ public interface GamesInfoCommand extends Jsonable {
     @Immutable
     @JsonDeserialize
     class JoinGame implements GamesInfoCommand , CompressedJsonable, PersistentEntity.ReplyType<Option<GameInfo>>{
-        final String gameId;
-        final String userId;
+        public final String gameId;
+        public final String userId;
         @JsonCreator
         public JoinGame(String gameId, String userId) {
             this.gameId = gameId;

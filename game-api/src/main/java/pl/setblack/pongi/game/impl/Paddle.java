@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 @JsonDeserialize
 public class Paddle extends GameObject {
-    final float targetY;
+    public final float targetY;
     @JsonCreator
     public Paddle(float x, float y, float targetY) {
         super(x, y);
@@ -23,11 +23,11 @@ public class Paddle extends GameObject {
     }
 
     public Paddle paddleMove(long timeDiff) {
-        float distanceToTarget = targetY - y;
-        float direction = Math.signum(distanceToTarget);
-        float maxMove = timeDiff/ 5000.0f;
-        float realMove = Math.min(Math.abs(distanceToTarget),maxMove);
-        float newY = this.y + (direction)*realMove;
+        final float distanceToTarget = targetY - y;
+        final float direction = Math.signum(distanceToTarget);
+        final float maxMove = timeDiff/ 5000.0f;
+        final float realMove = Math.min(Math.abs(distanceToTarget),maxMove);
+        final float newY = this.y + (direction)*realMove;
         return new Paddle(this.x, newY, targetY);
     }
 

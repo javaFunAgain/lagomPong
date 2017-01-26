@@ -1,6 +1,5 @@
 package pl.setblack.pongi.users.impl;
 
-import akka.Done;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;

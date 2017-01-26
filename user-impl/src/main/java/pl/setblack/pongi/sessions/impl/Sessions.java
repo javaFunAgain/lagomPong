@@ -1,7 +1,5 @@
 package pl.setblack.pongi.sessions.impl;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
 import javaslang.collection.HashMap;
 import javaslang.control.Option;
 import jdk.nashorn.internal.ir.annotations.Immutable;
@@ -29,7 +27,7 @@ public class Sessions {
         this(Clock.systemUTC(), HashMap.empty());
     }
 
-    Session createSession(final String userId) {
+    public Session createSession(final String userId) {
         final LocalDateTime now = LocalDateTime.now(this.clock);
         final LocalDateTime expirationTime = now.plusDays(1);
         final UUID sessionUUID = UUID.randomUUID();
@@ -38,11 +36,11 @@ public class Sessions {
     }
 
 
-    Sessions withNewSession( final Session ses) {
+    public Sessions withNewSession( final Session ses) {
         return new Sessions(this.clock, this.activeSessions.put(ses.uuid, ses));
     }
 
-    Option<Session> findSession(final String sessionId) {
+    public Option<Session> findSession(final String sessionId) {
         return this.activeSessions.get(UUID.fromString(sessionId));
     }
 }

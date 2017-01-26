@@ -8,9 +8,9 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 @JsonDeserialize
 public class Player {
-    final int score;
-    final String name;
-    final Paddle paddle;
+    public final int score;
+    public final String name;
+    public final Paddle paddle;
 
     @JsonCreator
     public Player(int score, String name, Paddle paddle) {
@@ -24,10 +24,9 @@ public class Player {
     }
 
     public Player makeMoving(String userId, float targetY) {
-        if ( this.name.equals(userId)) {
-            return new Player(this.score, this.name, this.paddle.movingTo(targetY));
-        } else{
-            return this;
-        }
+        return (this.name.equals(userId))
+                ? new Player(this.score, this.name, this.paddle.movingTo(targetY))
+                : this;
+
     }
 }

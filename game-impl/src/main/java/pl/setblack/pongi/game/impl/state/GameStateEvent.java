@@ -42,7 +42,7 @@ public interface GameStateEvent extends Jsonable {
     @Immutable
     @JsonDeserialize
     final class GameCycle implements GameStateEvent {
-        final long time;
+        public final long time;
         @JsonCreator
         public GameCycle(long time) {
             this.time = time;

@@ -11,7 +11,6 @@ import javaslang.control.Option;
 import pl.setblack.pongi.sessions.impl.SessionsCommand;
 import pl.setblack.pongi.sessions.impl.SessionsEntity;
 import pl.setblack.pongi.users.*;
-import scala.Unit;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletableFuture;
