@@ -9,6 +9,7 @@ import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Created by jarek on 1/19/17.
@@ -28,10 +29,10 @@ public class UserServiceTest {
     public void testDoubleCreateUser() {
         withServer(defaultSetup().withCassandra(true), server -> {
             UsersService service = server.client(UsersService.class);
-            RegUserStatus created1st = service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
+            service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
             RegUserStatus created2nd= service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
 
-            assertEquals(false, created2nd.ok);
+            assertFalse(created2nd.ok);
 
         });
     }
