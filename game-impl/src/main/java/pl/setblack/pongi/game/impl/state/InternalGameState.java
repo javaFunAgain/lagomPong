@@ -7,7 +7,6 @@ import javaslang.control.Option;
 import pl.setblack.pongi.game.impl.*;
 
 import javax.annotation.concurrent.Immutable;
-import java.time.Clock;
 
 /**
  * Created by jarek on 1/23/17.

@@ -1,6 +1,5 @@
 package pl.setblack.pongi.users.impl;
 
-import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import javaslang.control.Option;
 import pl.setblack.pongi.users.RegUserStatus;
