@@ -31,7 +31,7 @@ public class UserServiceTest {
             RegUserStatus created1st = service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
             RegUserStatus created2nd= service.addUser("aaa").invoke(new NewUser("aaa")).toCompletableFuture().get(5, SECONDS);
 
-            assertEquals(true, created2nd.false);
+            assertEquals(false, created2nd.ok);
 
         });
     }
