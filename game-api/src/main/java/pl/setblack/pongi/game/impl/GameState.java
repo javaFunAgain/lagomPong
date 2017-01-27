@@ -5,11 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javaslang.Tuple2;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 import java.util.function.Function;
 
 @Immutable
 @JsonDeserialize
-public class GameState {
+public class GameState implements Serializable {
 
     public final Ball ball;
     public final Tuple2<Player, Player> players;
@@ -33,7 +34,7 @@ public class GameState {
 
     public GameState push(long newTime) {
         long diff = newTime - this.updateTime;
-        float scale = diff / 10.0f;
+        float scale = diff / 5.0f;
         final Ball newBallPos = this.ball.bounce(this.players.map( pl->pl.paddle, pl->pl.paddle)).move(scale);
         final Function<Player,Player> movePaddle = player -> player.movePaddle(diff);
 

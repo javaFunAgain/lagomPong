@@ -46,7 +46,7 @@ public class GamesServiceImpl implements GamesService {
         this.persistentEntityRegistry.register(GamesInfoEntity.class);
         this.persistentEntityRegistry.register(GameStateEntity.class);
 
-        this.scheduler.scheduleAtFixedRate(()->pushGames(), 1000, 50,TimeUnit.MILLISECONDS);
+        this.scheduler.scheduleAtFixedRate(()->pushGames(), 1000, 20,TimeUnit.MILLISECONDS);
     }
 
     private void pushGames() {

@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 @Immutable
 @JsonDeserialize
-public class Player {
+public class Player implements Serializable{
     public final int score;
     public final String name;
     public final Paddle paddle;

@@ -7,13 +7,14 @@ import javaslang.control.Option;
 import pl.setblack.pongi.game.impl.*;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * Created by jarek on 1/23/17.
  */
 @JsonDeserialize
 @Immutable
-public class InternalGameState {
+public class InternalGameState implements Serializable {
     public final Option<GameState> game;
 
     @JsonCreator

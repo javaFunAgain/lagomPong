@@ -33,8 +33,8 @@ object Pong {
         Welcome.page()
       })
       elem
-        .orElse(state.games.map(list => GamesList.page(list)))
         .orElse(state.currentGame.map(game => PlayField.GameStateComponent(game.state)))
+        .orElse(state.games.map(list => GamesList.page(list)))
         .getOrElse(<.p("empty one"))
     }
 
@@ -79,9 +79,10 @@ object Pong {
             .map(
               game => {
                 api.getGame(game.uuid)
-                  .onComplete(newState => $.setState(ps.withState(game.uuid, newState.get)).runNow()
-
-                  )
+                  .onComplete(tried => {
+                    $.setState( ps.withState(game.uuid, tried.get)).runNow()
+                    //tried.get.map(newState => $.setState(ps.withState(game.uuid, newState)).runNow())
+                  })
               }
             )
         }).runNow()
@@ -93,7 +94,7 @@ object Pong {
     }
 
     def joinGame(uuid: String) = {
-      api.joinGame(uuid).onComplete(state => toGame(uuid, state.get))
+      api.joinGame(uuid).onComplete(_.foreach( state => toGame(uuid, state.get)))
     }
 
     def createGame(name: String) = {

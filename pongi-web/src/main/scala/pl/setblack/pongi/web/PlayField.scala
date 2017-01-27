@@ -48,8 +48,8 @@ object PlayField {
 
   @ScalaJSDefined
   class StylePositioned(o : GameObject)  extends js.Object {
-    val left : String =  toPercent(o.x)
-    val top : String =  toPercent(o.y)
+
+    val transform : String =  "translateX("+toPercent(o.x)+") translateY("+toPercent(o.y)+")"
   }
 
   private def toPercent(v :Float) : String = {

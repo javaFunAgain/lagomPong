@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
 
 /**
  * Created by jarek on 1/24/17.
  */
 @Immutable
 @JsonDeserialize
-public class Vector2D {
+public class Vector2D implements Serializable {
     public final float x;
     public final float y;
 

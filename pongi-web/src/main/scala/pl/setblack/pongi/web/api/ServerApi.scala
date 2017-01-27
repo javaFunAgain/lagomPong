@@ -52,9 +52,10 @@ class ServerApi {
     result.future
   }
 
-  def joinGame(gameId : String) : Future[GameState] = {
+  def joinGame(gameId : String) : Future[Option[GameState]] = {
     doAjax("/api/games/join", Some(gameId))
-      .map( str => read[GameState](str))
+      .map( str =>
+        readOptional(str, read[GameState](_)))
   }
 
   def movePaddle(gameId : String, targetY : Double) : Future[Boolean] = {
@@ -62,11 +63,22 @@ class ServerApi {
       .map( str => true)
   }
 
-  def getGame(gameId : String) : Future[GameState] = {
+  def getGame(gameId : String) : Future[Option[GameState]] = {
     doAjax("/api/games/"+gameId)
-      .map( str => read[GameState](str))
+      .map( str => {
+
+        readOptional(str, read[GameState](_))
+      })
   }
 
+
+  private def readOptional[T]( value : String, parser : String=>T):Option[T] = {
+    if ( value == "null") {
+      None
+    } else {
+      Some(parser(value))
+    }
+  }
 
   def createGame(name : String) : Future[GameInfo] = {
     doAjax("/api/games/create", Some(name))

@@ -33,7 +33,7 @@ class GameLoop {
 
     document.onkeyup = keyUp
 
-    js.timers.setInterval(50) {
+    js.timers.setInterval(10) {
       scanKeys
       if  (!stopped) Pong.getMainBackend.foreach( pb => pb.refresh())
     }

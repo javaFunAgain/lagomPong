@@ -31,15 +31,30 @@ body {
 
         > figure {
             position: absolute;
-            width: 1em;
-            height: 1em;
-            background: white;
-            transition: left 0.01s , top 0.01s;
-            &.player {
+            width: 100%;
+            height: 100%;
+            background: none;
+            transition: transform 0.01s;
+            z-index: -1;
+            &::after {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+            }
+
+            &.player::after {
+                content: "";
+                width: 1em;
                 height: 10%;
+                background: white;
                 transform: translateY(-50%);
             }
-            &.ball {
+            &.ball::after {
+                content: "";
+                height: 1em;
+                width: 1em;
+
+                background: white;
                 border-radius: 100%;
             }
         }

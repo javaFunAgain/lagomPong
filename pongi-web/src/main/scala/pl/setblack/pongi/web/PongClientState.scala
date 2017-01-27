@@ -13,6 +13,7 @@ case class PongClientState(
                           ) {
 
 
+
   def this()  = this(Some(Welcome.WelcomeState()), None,None)
 
 
@@ -21,12 +22,20 @@ case class PongClientState(
   }
 
   def toGame( uuid: String, gameState : GameState): PongClientState = {
-    PongClientState(None, None, Some(CurrentGameWrapper(uuid, gameState)))
+    PongClientState(None, this.games, Some(CurrentGameWrapper(uuid, gameState)))
   }
 
-  def withState(uuid: String, gameState: GameState) = toGame(uuid, gameState )
+  def withState(uuid: String, gameState: GameState):PongClientState = toGame(uuid, gameState )
+
+  def withState(uuid: String, gameState: Option[GameState]):PongClientState = {
+    gameState.map( this.withState(uuid, _ )).getOrElse(this.backToGamesList())
+  }
 
 
+  private def backToGamesList() = {
+    println(s"games list state ${this.games}")
+    PongClientState(None, this.games, None)
+  }
 }
 
 
