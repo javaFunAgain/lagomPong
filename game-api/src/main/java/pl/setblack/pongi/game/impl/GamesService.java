@@ -2,6 +2,7 @@ package pl.setblack.pongi.game.impl;
 
 import akka.Done;
 import akka.NotUsed;
+import akka.stream.javadsl.Source;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
@@ -25,15 +26,20 @@ public interface GamesService extends Service{
 
     ServiceCall<String, Done> movePaddle(final String gameId) ;
 
-        @Override
+    ServiceCall<Source<String, NotUsed>, Source<GameState, NotUsed>> stream(final String gameId);
+
+
+    @Override
     default Descriptor descriptor() {
         // @formatter:off
         return named("games").withCalls(
                 pathCall("/api/games/games",  this::games),
                 pathCall("/api/games/create",  this::create),
                 pathCall("/api/games/join",  this::join),
+                pathCall("/api/games/stream/:uuid", this::stream),
                 pathCall("/api/games/:uuid",  this::getGame),
                 pathCall("/api/games/move/:uuid",  this::movePaddle)
+
         ).withAutoAcl(true);
         // @formatter:on
     }

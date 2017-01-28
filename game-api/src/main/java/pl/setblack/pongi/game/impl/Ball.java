@@ -69,7 +69,7 @@ public class Ball extends GameObject {
         if ( this.y < 0 && speed.y < 0) {
             return new Ball(this.x, 0f, this.speed.bounceY());
         }
-        if ( this.y > 1.0f && speed.x > 0) {
+        if ( this.y > 1.0f && speed.y > 0) {
             return new Ball(this.x, 1.0f, this.speed.bounceY());
         }
         return this;

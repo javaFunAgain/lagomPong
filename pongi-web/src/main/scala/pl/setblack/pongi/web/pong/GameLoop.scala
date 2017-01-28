@@ -35,7 +35,7 @@ class GameLoop {
 
     js.timers.setInterval(10) {
       scanKeys
-      if  (!stopped) Pong.getMainBackend.foreach( pb => pb.refresh())
+      //if  (!stopped) Pong.getMainBackend.foreach( pb => pb.refresh())
     }
 
   }

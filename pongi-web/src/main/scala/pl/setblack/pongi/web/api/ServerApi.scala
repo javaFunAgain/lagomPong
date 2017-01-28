@@ -1,7 +1,10 @@
 package pl.setblack.pongi.web.api
 
+import org.scalajs.dom
+
 import scala.scalajs.js.annotation.JSExportAll
 import org.scalajs.jquery.{JQueryAjaxSettings, JQueryPromise, jQuery}
+import pl.setblack.pongi.web.Pong
 import pl.setblack.pongi.web.pong.GameState
 import upickle.Js
 
@@ -53,6 +56,20 @@ class ServerApi {
   }
 
   def joinGame(gameId : String) : Future[Option[GameState]] = {
+    val host = dom.window.location.host
+    val changedPort = host.replace("9001","9000")
+    var wsUrl  = s"ws://${changedPort}/api/games/stream/${gameId}"
+    val socket = new dom.WebSocket(wsUrl)
+    socket.onmessage = {
+      (e: dom.MessageEvent) =>
+        readOptional(e.data.toString, read[GameState](_)).foreach( newState =>
+        Pong.getMainBackend.foreach(back => back.toGame(gameId, newState)  ))
+    }
+    socket.onopen = { (e: dom.Event) =>
+
+    }
+
+
     doAjax("/api/games/join", Some(gameId))
       .map( str =>
         readOptional(str, read[GameState](_)))

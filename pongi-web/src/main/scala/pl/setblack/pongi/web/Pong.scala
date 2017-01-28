@@ -24,6 +24,9 @@ object Pong {
 
     mainBackend = Some(this)
 
+    println("backend created")
+
+
     private val api = new ServerApi
 
     def server = api
@@ -89,7 +92,6 @@ object Pong {
     }
 
     def toGame(uuid: String, state: GameState) = {
-      println(s"going to game ${uuid}")
       $.modState(ps => ps.toGame(uuid, state)).runNow()
     }
 
