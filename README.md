@@ -3,3 +3,17 @@
 # lagomPong
 
 
+# how to run
+
+ ## Server
+ mvn lagom:runAll
+ 
+ ## Client Backend
+ cd  pongi-web
+ npm install
+ sbt ~fastOptJS &
+ gulp
+ 
+ http://localhost:9000
+
+
