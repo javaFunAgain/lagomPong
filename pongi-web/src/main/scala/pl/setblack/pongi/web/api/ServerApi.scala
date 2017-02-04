@@ -58,7 +58,7 @@ class ServerApi {
   private def startWs(gameId: String): Unit = {
     val host = dom.window.location.host
     val changedPort = host.replace("9001", "9000")
-    var wsUrl = s"ws://Beaerr:Dziwny@${changedPort}/api/games/stream/${gameId}"
+    var wsUrl = s"ws://${changedPort}/api/games/stream/${gameId}"
     val socket = new dom.WebSocket(wsUrl)
 
     socket.onmessage = {
@@ -69,11 +69,13 @@ class ServerApi {
     socket.onopen = { (e: dom.Event) =>
       socket.send(createBearerString)
     }
+
+    socket.onerror = { (e: dom.Event) =>
+      println(s"socket error ${e}")
+    }
   }
 
   def joinGame(gameId: String): Future[Option[GameState]] = {
-
-
 
     doAjax("/api/games/join", Some(gameId))
       .map(str =>

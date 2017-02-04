@@ -53,8 +53,8 @@ object Pong {
          .foreach(_ => {
            val currentPaddle = aplayer.paddle.y
            val newTarget = player1Key  match {
-             case KeyState.Up => currentPaddle - 0.1;
-             case KeyState.Down => currentPaddle + 0.1;
+             case KeyState.Up => currentPaddle - 0.01;
+             case KeyState.Down => currentPaddle + 0.01;
              case _ => currentPaddle
            }
            val sanitized = Math.min(Math.max(0f, newTarget),1.0f)

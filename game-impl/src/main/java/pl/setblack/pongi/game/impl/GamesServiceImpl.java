@@ -3,6 +3,7 @@ package pl.setblack.pongi.game.impl;
 import akka.Done;
 import akka.NotUsed;
 import akka.japi.Pair;
+import akka.stream.javadsl.Flow;
 import akka.stream.javadsl.Source;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.MessageProtocol;
@@ -49,7 +50,7 @@ public class GamesServiceImpl implements GamesService {
         this.pubSub = pubSub;
         this.persistentEntityRegistry.register(GamesInfoEntity.class);
         this.persistentEntityRegistry.register(GameStateEntity.class);
-        this.scheduler.scheduleAtFixedRate(() -> pushGames(), 1000, 20, TimeUnit.MILLISECONDS);
+        this.scheduler.scheduleAtFixedRate(() -> pushGames(), 1000, 50, TimeUnit.MILLISECONDS);
 
     }
 
@@ -124,22 +125,19 @@ public class GamesServiceImpl implements GamesService {
     }
 
 
-    private Source<GameState, NotUsed> createFlow(final String gameId) {
+    private Source<GameState, NotUsed> createFlow(Source<String, NotUsed> input, final String gameId) {
+
 
         final PubSubRef<GameState> ref = pubSub.refFor(TopicId.of(GameState.class, gameId));
-        return ref.subscriber();
+        Source<GameState, NotUsed> games =  ref.subscriber();
 
-
+        return games;
     }
 
     @Override
     public ServiceCall<Source<String, NotUsed>, Source<GameState, NotUsed>> stream(final String gameId) {
-        return req -> CompletableFuture.completedFuture(createFlow(gameId));
-      /*
-
-        return hellos -> CompletableFuture.completedFuture(
-                hellos.mapAsync(8, name -> helloService.hello(name).invoke()));*/
-        //throw new UnsupportedOperationException();
+        return req ->
+                CompletableFuture.completedFuture(createFlow(req, gameId));
     }
 
     private <T, REQ> HeaderServiceCall<REQ, T> runSecure(BiFunction<Session, REQ, CompletionStage<T>> privilegedAction,
@@ -147,7 +145,6 @@ public class GamesServiceImpl implements GamesService {
         return (reqHeaders, requestData) -> {
 
             final Option<String> bearer = Option.ofOptional(reqHeaders.getHeader("Authorization"));
-
             final CompletionStage<Option<Session>> sessionCall = bearer.map(bs -> {
                 final String sessionId = bs.replace("Bearer ", "");
                 return this.usersService.session(sessionId).invoke();
