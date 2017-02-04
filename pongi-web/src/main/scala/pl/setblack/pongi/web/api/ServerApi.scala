@@ -15,15 +15,17 @@ import upickle.default._
 import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.JSON
+import scala.util.Success
 
 
 /**
   * Created by jarek on 1/22/17.
   */
 class ServerApi {
+
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  var session:Option[Session] = None
+  var session: Option[Session] = None
 
   case class NewUser(password: String)
 
@@ -34,91 +36,98 @@ class ServerApi {
   def registerUser(login: String, pass: String): Future[RegisterResult] = {
     val data = NewUser(pass)
     val result = Promise[RegisterResult]
-    jQuery.post("/api/users/add/" + login, write[NewUser](data).asInstanceOf[js.Any], null, "text").done(
-      (response: String) => {
-        result.success(read[RegisterResult](response))
-      }
-    )
-    result.future
+    doAjax("/api/users/add/" + login, Some(write[NewUser](data)))
+      .map(
+        (response: String) => read[RegisterResult](response))
   }
+
+
 
   def loginUser(login: String, pass: String): Future[Option[Session]] = {
     val data = NewUser(pass)
     val result = Promise[Option[Session]]
-    jQuery.post("/api/users/login/" + login, write[NewUser](data).asInstanceOf[js.Any], null, "text").done(
+    doAjax("/api/users/login/" + login, Some(write[NewUser](data)))
+        .map(
       (response: String) => {
-        val newSession  = read[Session](response)
-        this.session = Some(newSession)
-        result.success( this.session)
+        this.session= safePickle(response, read[Session](_))
+        this.session
       }
     )
-    result.future
   }
 
-  def joinGame(gameId : String) : Future[Option[GameState]] = {
+  private def startWs(gameId: String): Unit = {
     val host = dom.window.location.host
-    val changedPort = host.replace("9001","9000")
-    var wsUrl  = s"ws://${changedPort}/api/games/stream/${gameId}"
+    val changedPort = host.replace("9001", "9000")
+    var wsUrl = s"ws://Beaerr:Dziwny@${changedPort}/api/games/stream/${gameId}"
     val socket = new dom.WebSocket(wsUrl)
+
     socket.onmessage = {
       (e: dom.MessageEvent) =>
-        readOptional(e.data.toString, read[GameState](_)).foreach( newState =>
-        Pong.getMainBackend.foreach(back => back.toGame(gameId, newState)  ))
+        readOptional(e.data.toString, read[GameState](_)).foreach(newState =>
+          Pong.getMainBackend.foreach(back => back.toGame(gameId, newState)))
     }
     socket.onopen = { (e: dom.Event) =>
-
+      socket.send(createBearerString)
     }
+  }
+
+  def joinGame(gameId: String): Future[Option[GameState]] = {
+
 
 
     doAjax("/api/games/join", Some(gameId))
-      .map( str =>
+      .map(str =>
         readOptional(str, read[GameState](_)))
+        .map( result => {
+          result.foreach( game => startWs(gameId))
+          result
+        })
   }
 
-  def movePaddle(gameId : String, targetY : Double) : Future[Boolean] = {
-    doAjax("/api/games/move/"+gameId, Some(targetY.toString))
-      .map( str => true)
+  def movePaddle(gameId: String, targetY: Double): Future[Boolean] = {
+    doAjax("/api/games/move/" + gameId, Some(targetY.toString))
+      .map(str => true)
   }
 
-  def getGame(gameId : String) : Future[Option[GameState]] = {
-    doAjax("/api/games/"+gameId)
-      .map( str => {
+  def getGame(gameId: String): Future[Option[GameState]] = {
+    doAjax("/api/games/" + gameId)
+      .map(str => {
 
         readOptional(str, read[GameState](_))
       })
   }
 
 
-  private def readOptional[T]( value : String, parser : String=>T):Option[T] = {
-    if ( value == "null") {
+  private def readOptional[T](value: String, parser: String => T): Option[T] = {
+    if (value == "null") {
       None
     } else {
       Some(parser(value))
     }
   }
 
-  def createGame(name : String) : Future[GameInfo] = {
+  def createGame(name: String): Future[GameInfo] = {
     doAjax("/api/games/create", Some(name))
-      .map( str => read[GameInfo](str))
+      .map(str => read[GameInfo](str))
   }
 
 
-  def listGames() : Future[Seq[GameInfo]] = {
-      doAjax("/api/games/games")
-      .map( str => read[Seq[GameInfo]](str))
+  def listGames(): Future[Seq[GameInfo]] = {
+    doAjax("/api/games/games")
+      .map(str => read[Seq[GameInfo]](str))
   }
 
-  def  doAjax(url: String, data: Option[String]= None) : Future[String] = {
+  private def doAjax(url: String, data: Option[String] = None, contentType: String = "application/json"): Future[String] = {
     val baseSettings = Map(
       "dataType" -> "text",
-      "contentType" -> "text/plain",
+      "contentType" -> contentType,
       "headers" -> createAuthorizationHeader)
-    val settinegsMap = data.map ( input => {
-      baseSettings ++ Map( "method" -> "POST",
+    val settinegsMap = data.map(input => {
+      baseSettings ++ Map("method" -> "POST",
         "data" -> input)
     }).getOrElse(baseSettings)
 
-    val settings :JQueryAjaxSettings =
+    val settings: JQueryAjaxSettings =
       settinegsMap
         .toJSDictionary
         .asInstanceOf[JQueryAjaxSettings]
@@ -127,14 +136,29 @@ class ServerApi {
     val result = Promise[String]
     jQuery.ajax(url, settings)
       .asInstanceOf[JQueryPromise]
-      .done( (response:String) => {
-          result.success(response)
+      .done((response: String) => {
+        result.success(response)
       })
 
     result.future
   }
 
+  private def safePickle[T]( toParse : String, parser : String => T) : Option[T] = {
+    try {
+      Some(parser(toParse))
+    } catch {
+      case u: upickle.Invalid => {
+        println(u)
+        None
+      }
+    }
+  }
+
+  private def createBearerString = {
+    "Bearer " + session.map(s => s.uuid).getOrElse("")
+  }
+
   private def createAuthorizationHeader = {
-    js.Dictionary("Authorization" -> ("Bearer " + session.map(s => s.uuid).getOrElse("")))
+    js.Dictionary("Authorization" -> (createBearerString))
   }
 }

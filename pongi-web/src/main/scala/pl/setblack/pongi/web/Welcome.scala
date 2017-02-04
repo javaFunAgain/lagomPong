@@ -5,6 +5,7 @@ import japgolly.scalajs.react.{BackendScope, Callback, CallbackTo, ReactComponen
 import pl.setblack.pongi.web.api.ServerApi
 
 object Welcome {
+
   import scala.concurrent.ExecutionContext.Implicits.global
 
   case class LoginState(login: String = "", pass: String = "")
@@ -12,8 +13,6 @@ object Welcome {
   case class RegisterState(login: String = "", pass: String = "", conf: String = "")
 
   case class WelcomeState(reg: RegisterState = RegisterState())
-
-
 
 
   private val loginSection = ReactComponentB[Unit]("LoginSection")
@@ -42,14 +41,16 @@ object Welcome {
     def login(e: ReactEventI) = {
       $.state.map(reg => {
         Pong.getMainBackend.get.server.loginUser(reg.login, reg.pass).onComplete(
-          result => result.foreach(value => {
-            if (value.isDefined) {
-              Pong.getMainBackend.foreach(_.toGameList())
-            } else {
-              //  $.state(_)
-              println("login error")
-            }
-          }))
+          result => {
+            result.foreach(value => {
+              if (value.isDefined) {
+                Pong.getMainBackend.foreach(_.toGameList())
+              } else {
+                //  $.state(_)
+                println("login error")
+              }
+            })
+          })
       })
     }
 
@@ -86,7 +87,7 @@ object Welcome {
           result => result.foreach(value => {
             if (value.ok) {
               Pong.getMainBackend.get.server.loginUser(reg.login, reg.pass).onComplete(
-                _=>Pong.getMainBackend.get.toGameList()
+                _ => Pong.getMainBackend.get.toGameList()
               )
             } else {
               //  $.state(_)
