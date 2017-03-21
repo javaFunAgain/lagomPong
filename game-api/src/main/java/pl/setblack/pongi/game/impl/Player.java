@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Immutable
 @JsonDeserialize
 public class Player implements Serializable{
+    private static final long serialVersionUID = 1L;
     public final int score;
     public final String name;
     public final Paddle paddle;
@@ -28,6 +29,9 @@ public class Player implements Serializable{
         return (this.name.equals(userId))
                 ? new Player(this.score, this.name, this.paddle.movingTo(targetY))
                 : this;
+    }
 
+    public Player score() {
+        return new Player(this.score+1, name, paddle);
     }
 }

@@ -110,8 +110,8 @@ public class GamesServiceImpl implements GamesService {
     }
 
     @Override
-    public ServiceCall<String, Option<GameState>> join() {
-        return runSecure((session, gameId) -> {
+    public ServiceCall<String, Option<GameState>> join(String gameId) {
+        return runSecure((session, any) -> {
             final PersistentEntityRef<GamesInfoCommand> infoRef = persistentEntityRegistry.refFor(GamesInfoEntity.class, "global");
             return infoRef.ask(new GamesInfoCommand.JoinGame(gameId, session.userId))
                     .thenCompose((Option<GameInfo> gameInfoOption) ->
@@ -144,8 +144,8 @@ public class GamesServiceImpl implements GamesService {
                                                          Supplier<T> insecureResult) {
         return (reqHeaders, requestData) -> {
 
-            final Option<String> bearer = Option.ofOptional(reqHeaders.getHeader("Authorization"));
-            final CompletionStage<Option<Session>> sessionCall = bearer.map(bs -> {
+            final Option<String> bearer2 = Option.ofOptional(reqHeaders.getHeader("Authorization"));
+            final CompletionStage<Option<Session>> sessionCall = bearer2.map(bs -> {
                 final String sessionId = bs.replace("Bearer ", "");
                 return this.usersService.session(sessionId).invoke();
             }).getOrElse(CompletableFuture.completedFuture(Option.none()));

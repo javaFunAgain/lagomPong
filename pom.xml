@@ -18,6 +18,8 @@
         <module>user-impl</module>
         <module>game-api</module>
         <module>game-impl</module>
+        <module>score-api</module>
+        <module>score-impl</module>
     </modules>
 
     <build>

@@ -20,7 +20,7 @@ public interface GamesService extends Service{
 
     ServiceCall<String, Option<GameInfo>> create();
 
-    ServiceCall<String, Option<GameState>> join();
+    ServiceCall<String, Option<GameState>> join(String uuid);
 
     ServiceCall<NotUsed, Option<GameState>> getGame(String uuid);
 
@@ -34,9 +34,9 @@ public interface GamesService extends Service{
         // @formatter:off
         return named("games").withCalls(
                 pathCall("/api/games/games",  this::games),
-                pathCall("/api/games/create",  this::create),
-                pathCall("/api/games/join",  this::join),
-                pathCall("/api/games/stream/:uuid", this::stream),
+                pathCall("/api/games/games",  this::create),
+                pathCall("/api/games/games/:uuid",  this::join),
+                pathCall("/api/games/games/:uuid", this::stream),
                 pathCall("/api/games/:uuid",  this::getGame),
                 pathCall("/api/games/move/:uuid",  this::movePaddle)
 

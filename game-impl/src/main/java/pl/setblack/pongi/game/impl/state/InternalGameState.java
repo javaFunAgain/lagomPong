@@ -8,6 +8,7 @@ import pl.setblack.pongi.game.impl.*;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
+import java.util.Random;
 
 /**
  * Created by jarek on 1/23/17.
@@ -16,6 +17,8 @@ import java.io.Serializable;
 @Immutable
 public class InternalGameState implements Serializable {
     public final Option<GameState> game;
+
+    private final Random random = new Random(7);
 
     @JsonCreator
     public InternalGameState(Option<GameState> game) {
@@ -30,8 +33,9 @@ public class InternalGameState implements Serializable {
             final Ball ball = new Ball(0.5f, 0.5f);
             final Player player1 = new Player(0, info.players.get(0), createPaddle(1));
             final Player player2 = new Player(0, info.players.get(1), createPaddle(2));
-            final GameState state = new GameState(ball, Tuple.of(player1,player2), startTime);
-            return new InternalGameState(Option.some(state.start(startTime)));
+
+            final Option<GameState> state = GameState.startFrom(info, startTime, random);
+            return new InternalGameState(state);
 
         } else {
             return new InternalGameState(Option.none());
@@ -44,7 +48,7 @@ public class InternalGameState implements Serializable {
     }
 
     public InternalGameState push(long time) {
-        return new InternalGameState(this.game.map( state->state.push(time)));
+        return new InternalGameState(this.game.map( state->state.push(time, random)));
     }
 
     public InternalGameState withPlayerMovingTo(String userId, float targetY) {

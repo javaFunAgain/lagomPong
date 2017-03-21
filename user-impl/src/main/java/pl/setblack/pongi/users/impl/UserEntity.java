@@ -19,6 +19,7 @@ public class UserEntity extends PersistentEntity<UserCommand, UserEvent, UserSta
                 evt -> {
                         System.out.println("event ... new user:"+ evt.userId);
                     System.out.println("and before was:"+ state().user);
+
                         return new UserState(Option.some(new UserData(evt.userId, evt.data.password)));
                 });
 

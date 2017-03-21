@@ -23,9 +23,9 @@ public interface UsersService extends Service{
     default Descriptor descriptor() {
         // @formatter:off
         return named("users").withCalls(
-                pathCall("/api/users/add/:id",  this::addUser),
-                pathCall("/api/users/login/:id",  this::login),
-                pathCall("/api/users/session/:id",  this::session)
+                pathCall("/api/users/:id",  this::addUser),
+                pathCall("/api/sessions/:id",  this::login),
+                pathCall("/api/sessions/:id",  this::session)
         ).withAutoAcl(true);
         // @formatter:on
     }
