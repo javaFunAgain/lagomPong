@@ -33,14 +33,15 @@ public interface GamesService extends Service{
     default Descriptor descriptor() {
         // @formatter:off
         return named("games").withCalls(
+                pathCall("/api/games/game/:uuid",  this::join),
+                pathCall("/api/games/stream/:uuid", this::stream),
                 pathCall("/api/games/games",  this::games),
                 pathCall("/api/games/games",  this::create),
-                pathCall("/api/games/games/:uuid",  this::join),
-                pathCall("/api/games/games/:uuid", this::stream),
-                pathCall("/api/games/:uuid",  this::getGame),
-                pathCall("/api/games/move/:uuid",  this::movePaddle)
+                pathCall("/api/games/game/:uuid",  this::getGame),
+                pathCall("/api/games/players/:uuid",  this::movePaddle)
 
         ).withAutoAcl(true);
         // @formatter:on
     }
+
 }

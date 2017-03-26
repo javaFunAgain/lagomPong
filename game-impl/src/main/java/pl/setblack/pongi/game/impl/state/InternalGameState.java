@@ -30,10 +30,6 @@ public class InternalGameState implements Serializable {
             return this;
         }
         if ( info.players.size()==2) {
-            final Ball ball = new Ball(0.5f, 0.5f);
-            final Player player1 = new Player(0, info.players.get(0), createPaddle(1));
-            final Player player2 = new Player(0, info.players.get(1), createPaddle(2));
-
             final Option<GameState> state = GameState.startFrom(info, startTime, random);
             return new InternalGameState(state);
 
