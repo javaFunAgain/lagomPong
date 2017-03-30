@@ -1,5 +1,6 @@
 package pl.setblack.pongi.score.impl.state;
 
+import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import javaslang.control.Option;
 
@@ -17,6 +18,9 @@ public class ScoresEntity extends PersistentEntity<ScoreCommand, ScoreEvent, Sco
         b.setEventHandler(ScoreEvent.RecordsAdded.class,
                 event -> state().registerScores(event.records));
 
+        b.setCommandHandler(ScoreCommand.RegisterRecords.class,
+                (cmd, ctx) -> ctx.thenPersist(new ScoreEvent.RecordsAdded(cmd.records), ev -> ctx.reply(Done.getInstance()))
+        );
 
         return b.build();
     }

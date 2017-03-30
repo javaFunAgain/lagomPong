@@ -5,7 +5,7 @@ package pl.setblack.pongi.game.impl;
  */
 public final class GameParams {
 
-    public static final  float RELATIVE_SPEED  = 10.0f;
+    public static final  float RELATIVE_SPEED  = 1.0f;
 
 
     private GameParams() {

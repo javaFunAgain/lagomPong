@@ -42,4 +42,8 @@ public class GamesInfo{
     public Option<GameInfo> findGame(String gameId) {
         return this.allGames.filter( gi -> gi.uuid.equals(gameId)).headOption();
     }
+
+    public GamesInfo removeGame(String gameId) {
+        return new GamesInfo(this.allGames.removeFirst( game -> game.uuid.equals(gameId)));
+    }
 }

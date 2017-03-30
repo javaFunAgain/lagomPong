@@ -3,7 +3,6 @@ package pl.setblack.pongi.game.impl;
 import akka.Done;
 import akka.NotUsed;
 import akka.japi.Pair;
-import akka.stream.javadsl.Flow;
 import akka.stream.javadsl.Source;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.MessageProtocol;
@@ -21,6 +20,7 @@ import pl.setblack.pongi.game.impl.info.GamesInfoCommand;
 import pl.setblack.pongi.game.impl.info.GamesInfoEntity;
 import pl.setblack.pongi.game.impl.state.GameStateCommand;
 import pl.setblack.pongi.game.impl.state.GameStateEntity;
+import pl.setblack.pongi.score.ScoreService;
 import pl.setblack.pongi.users.Session;
 import pl.setblack.pongi.users.UsersService;
 
@@ -37,6 +37,8 @@ public class GamesServiceImpl implements GamesService {
 
     private final UsersService usersService;
 
+    private final ScoreService scoreService;
+
     private final Clock clock = Clock.systemUTC();
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -44,9 +46,10 @@ public class GamesServiceImpl implements GamesService {
     private final PubSubRegistry pubSub;
 
     @Inject
-    public GamesServiceImpl(UsersService usersService, PersistentEntityRegistry persistentEntityRegistry, PubSubRegistry pubSub) {
+    public GamesServiceImpl(UsersService usersService, PersistentEntityRegistry persistentEntityRegistry, ScoreService scoreService, PubSubRegistry pubSub) {
         this.usersService = usersService;
         this.persistentEntityRegistry = persistentEntityRegistry;
+        this.scoreService = scoreService;
         this.pubSub = pubSub;
         this.persistentEntityRegistry.register(GamesInfoEntity.class);
         this.persistentEntityRegistry.register(GameStateEntity.class);
@@ -65,7 +68,14 @@ public class GamesServiceImpl implements GamesService {
                         gameStateRef.ask(new GameStateCommand.PushGameLoop(clock.millis())).thenAccept(
                                 (Option<GameState> gameOption) -> {
                                     final PubSubRef<GameState> ref = this.pubSub.refFor(TopicId.of(GameState.class, game.uuid));
-                                    gameOption.forEach(g -> ref.publish(g));
+
+                                    gameOption.forEach(g -> {
+                                        if  ( g.phase == GamePhase.ENDED) {
+                                            gameListRef.ask(new GamesInfoCommand.EndGame(game.uuid, g))
+                                                    .thenComposeAsync( records -> this.scoreService.registerScore().invoke(records));
+                                        }
+                                        ref.publish(g);
+                                    });
                                 }
                         );
                     });

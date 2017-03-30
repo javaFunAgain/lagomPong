@@ -33,4 +33,14 @@ public interface GamesInfoEvent extends Jsonable {
         }
     }
 
+    @JsonDeserialize
+    final class GameRemoved implements  GamesInfoEvent {
+        public final String gameId;
+
+        @JsonCreator
+        public GameRemoved(String gameId) {
+            this.gameId = gameId;
+        }
+    }
+
 }

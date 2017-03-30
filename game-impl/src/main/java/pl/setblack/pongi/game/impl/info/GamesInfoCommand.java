@@ -8,6 +8,8 @@ import com.lightbend.lagom.serialization.Jsonable;
 import javaslang.collection.List;
 import javaslang.control.Option;
 import pl.setblack.pongi.game.impl.GameInfo;
+import pl.setblack.pongi.game.impl.GameState;
+import pl.setblack.pongi.score.ScoreRecord;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -48,6 +50,21 @@ public interface GamesInfoCommand extends Jsonable {
 
             this.name = name;
             this.userId = userId;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    @Immutable
+    @JsonDeserialize
+    class EndGame implements GamesInfoCommand , CompressedJsonable, PersistentEntity.ReplyType<List<ScoreRecord>>{
+        public final String gameId;
+        public final GameState state;
+
+
+        @JsonCreator
+        public EndGame(String gameId, GameState state) {
+            this.gameId = gameId;
+            this.state = state;
         }
     }
 }

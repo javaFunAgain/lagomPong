@@ -93,4 +93,6 @@ public class GameState implements Serializable {
         final Tuple2<Player,Player> newPlayers = this.players.map(movePaddle,movePaddle);
         return new GameState(this.ball, newPlayers,this.updateTime);
     }
+
+
 }
