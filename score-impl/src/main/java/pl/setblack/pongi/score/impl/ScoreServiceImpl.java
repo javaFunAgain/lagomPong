@@ -67,13 +67,14 @@ public class ScoreServiceImpl implements ScoreService {
                             "gamesLost, " +
                             "gamesPlayed, " +
                             "pointsScored, " +
-                            "pointsLost FROM userScore " +
-                            "ORDER BY totalScore DESC" +
-                            " LIMIT 20;")
+                            "pointsLost FROM userScore "
+                            )
                     .thenApply(allRows ->
                             List.ofAll(allRows)
                                     .map(ScoreRSProcessor.getRowUserScoreFunction())
-
+                                    .sortBy(score ->score.totalScore)
+                                    .reverse()
+                                    .take(20)
                     );
 
         };
