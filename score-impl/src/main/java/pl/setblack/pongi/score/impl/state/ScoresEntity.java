@@ -2,24 +2,23 @@ package pl.setblack.pongi.score.impl.state;
 
 import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
-import javaslang.control.Option;
 
 import java.util.Optional;
 
 /**
  * Created by jarek on 3/21/17.
  */
-public class ScoresEntity extends PersistentEntity<ScoreCommand, ScoreEvent, ScoresState> {
+public class ScoresEntity extends PersistentEntity<ScoreCommand, ScoreEvent, ScoreState> {
     @Override
-    public Behavior initialBehavior(Optional<ScoresState> snapshotState) {
+    public Behavior initialBehavior(Optional<ScoreState> snapshotState) {
         final BehaviorBuilder b = newBehaviorBuilder(
-                snapshotState.orElse(new ScoresState()));
+                snapshotState.orElse(new ScoreState()));
 
-        b.setEventHandler(ScoreEvent.RecordsAdded.class,
-                event -> state().registerScores(event.records));
+        b.setEventHandler(ScoreEvent.RecordAdded.class,
+                event -> state().registerSingleRecord(event.record));
 
-        b.setCommandHandler(ScoreCommand.RegisterRecords.class,
-                (cmd, ctx) -> ctx.thenPersist(new ScoreEvent.RecordsAdded(cmd.records), ev -> ctx.reply(Done.getInstance()))
+        b.setCommandHandler(ScoreCommand.RegisterRecord.class,
+                (cmd, ctx) -> ctx.thenPersist(new ScoreEvent.RecordAdded(cmd.record), ev -> ctx.reply(Done.getInstance()))
         );
 
         return b.build();

@@ -20,28 +20,17 @@ public interface ScoreCommand extends Jsonable {
     @SuppressWarnings("serial")
     @Immutable
     @JsonDeserialize
-    final class RegisterRecords implements
+    final class RegisterRecord implements
             ScoreCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
-        final List<ScoreRecord> records;
+        final ScoreRecord record;
 
         @JsonCreator
-        public RegisterRecords(List<ScoreRecord> records) {
-            this.records = records;
+        public RegisterRecord(ScoreRecord record) {
+            this.record = record;
         }
     }
 
-    @SuppressWarnings("serial")
-    @Immutable
-    @JsonDeserialize
-    final class GetTopScore implements
-            ScoreCommand, CompressedJsonable, PersistentEntity.ReplyType<List<UserScore> >{
-        final int limit;
 
-        @JsonCreator
-        public GetTopScore(int limit) {
-            this.limit = limit;
-        }
-    }
 
 
 }

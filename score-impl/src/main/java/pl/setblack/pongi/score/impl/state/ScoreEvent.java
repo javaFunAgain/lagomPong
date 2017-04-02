@@ -27,12 +27,12 @@ public interface ScoreEvent extends AggregateEvent<ScoreEvent>, Jsonable {
     @SuppressWarnings("serial")
     @Immutable
     @JsonDeserialize
-    final class RecordsAdded implements ScoreEvent {
-        final List<ScoreRecord> records;
+    final class RecordAdded implements ScoreEvent {
+        final ScoreRecord record;
 
         @JsonCreator
-        public RecordsAdded(List<ScoreRecord> records) {
-            this.records = records;
+        public RecordAdded(ScoreRecord record) {
+            this.record = record;
         }
     }
 }

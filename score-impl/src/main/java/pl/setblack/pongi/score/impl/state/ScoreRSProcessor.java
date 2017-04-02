@@ -13,10 +13,12 @@ import javaslang.concurrent.Future;
 import org.pcollections.PSequence;
 import org.pcollections.TreePVector;
 import pl.setblack.pongi.score.GameResult;
+import pl.setblack.pongi.score.ScoreRecord;
 import pl.setblack.pongi.score.UserScore;
 import pl.setblack.pongi.score.impl.state.ScoreEvent;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -50,7 +52,7 @@ public class ScoreRSProcessor extends ReadSideProcessor<ScoreEvent> {
                 readSide.<ScoreEvent>builder("scores")
                 .setGlobalPrepare(this::createTable)
                 .setPrepare(tag -> prepareWriteScore())
-                .setEventHandler(ScoreEvent.RecordsAdded.class, this::processScoreAdded);
+                .setEventHandler(ScoreEvent.RecordAdded.class, this::processScoreAdded);
         return builder.build();
     }
 
@@ -61,11 +63,10 @@ public class ScoreRSProcessor extends ReadSideProcessor<ScoreEvent> {
         return TreePVector.singleton(ScoreEvent.SCORE_EVENT_TAG);
     }
 
-    private CompletionStage<List<BoundStatement>> processScoreAdded(ScoreEvent.RecordsAdded event) {
-        final CompletableFuture<List<BoundStatement>> result  = new CompletableFuture<>();
-         Future.sequence(event.records.map(singleRecord ->
-
-                Future.fromJavaFuture(this.getSingleScore(singleRecord.userId).thenApply(
+    private CompletionStage<List<BoundStatement>> processScoreAdded(ScoreEvent.RecordAdded event) {
+        System.out.println("score in PROCESSOR:"+ event);
+        final ScoreRecord singleRecord =  event.record;
+          return this.getSingleScore(singleRecord.userId).thenApply(
                     score -> {
                         BoundStatement bindWriteScore = writeScore.bind();
                         boolean won = singleRecord.result == GameResult.WON;
@@ -76,13 +77,10 @@ public class ScoreRSProcessor extends ReadSideProcessor<ScoreEvent> {
                         bindWriteScore.setInt("pointsScored", score.pointsScored+ singleRecord.playerScored);
                         bindWriteScore.setInt("pointsLost", score.pointsLost+ singleRecord.opponentScore);
                         bindWriteScore.setString("userId", singleRecord.userId);
-
+                        System.out.println("bound for:"+singleRecord.userId);
                         return bindWriteScore;
                     }
-            ).toCompletableFuture()))).onSuccess( values -> result.complete(values.toJavaList()));
-
-        return result;
-
+            ).thenApply(bs -> Arrays.asList(bs));
     }
 
 
