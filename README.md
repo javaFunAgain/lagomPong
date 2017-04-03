@@ -10,6 +10,8 @@
  mvn lagom:runAll
  
  ## Client Backend
+ Clone project https://github.com/jarekratajski/scalajspounk
+ 
  
  ```
  cd  pongi-web
@@ -18,6 +20,6 @@
  gulp
 ```
  
-Browser open  http://localhost:9000
+Browser open  http://localhost:9001
 
 
